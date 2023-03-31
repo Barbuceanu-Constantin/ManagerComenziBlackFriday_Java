@@ -1,0 +1,35 @@
+Barbuceanu Constantin 332CB - Tema2 APD (Manager de comenzi de Black Friday in Java)
+
+Tema consta din 3 fisiere sursa:
+	Tema2.java -> aici se afla mainul
+	ThreadCitireComenzi.java
+	ThreadCitireProduse.java
+	
+In main se pornesc P threaduri de nivel 1 care vor citi din fisierul de comenzi.
+Toate primesc acelasi BufferedReader care are metoda readLine sincronizata.
+Deci nu vor citi 2 threaduri aceeasi linie simultan. Tot in main se da join
+la final tuturor threadurilor de nivel 1 si se instantiaza multe varibile
+obiect care vor fi pasate constructorilor threadurilor de nivel 1 si ulterior
+chiar si de nivel 2.
+
+In threadurile de nivel 1 de citire comenzi metoda run ruleaza un while pana cand
+linia citita din fisierul de comenzi este null. Atunci se da break. Altfel, daca un
+thread de nivel 1 citeste o linie valida, face split si extrage id-ul
+comenzii si nr-ul de produse. Id-ul va fi pasat tuturor threadurilor worker de nivel
+2 aferente acelei comenzi. Se foloseste un semafor de capacitate P creat in main.
+Pe acesta se da acquire de catre fiecare thread de nivel 2 pornit. La finalul
+fiecarui thread de nivel 2 se va da release. Folosesc variabla nrProcessedProducts
+pentru a sti la al catelea produs din comanda s-a ajuns deci unde trebuie sa se
+opreasca fiecare thread de nivel 2 cu citirea din fisier. Dupa ce s-au procesat
+toate produsele dintr-o comanda se verifica daca nr-ul de produse e diferit de 0,
+iar daca da se scrie comanda in fisierul de output.
+
+Fiecare thread de nivel 2, o sa isi creeze propriul BufferedReader si va citi
+linie cu linie intr-un while pana cand va ajunge la al catelea produs din comanda
+trebuie. La final o sa scrie produsul in fisierul de output pentru produse.
+
+Observatie:
+	Atat threadurile de nivel 1, cat si cele de nivel 2 folosesc un semafor de
+capacitate 1 pe care se face lock(se comporta ca un mutex) atunci cand vor sa scrie
+in fisierul de output. Practic in main se creeaza 2 semafoare de capacitate 1.
+Threadurile de nivel 1 il vor folosi pe unul din ele, iar cele de nivel 2 pe celalalt.
